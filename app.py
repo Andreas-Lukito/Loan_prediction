@@ -8,16 +8,18 @@ import pickle
 # ML Libraries
 from sklearn.preprocessing import LabelEncoder, OrdinalEncoder, OneHotEncoder
 from xgboost import XGBClassifier
-
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 import pickle
 
+# Encoders
 class Encoders:
     def __init__(self):
-        self.education = self.load_encoder("education_encoder.pkl")
-        self.gender = self.load_encoder("gender_encoder.pkl")
-        self.home_ownership = self.load_encoder("home_ownership_encoder.pkl")
-        self.loan_intent = self.load_encoder("loan_intent_encoder.pkl")
-        self.previous_loans = self.load_encoder("previous_loans_encoder.pkl")
+        self.gender: LabelEncoder = self.load_encoder("gender_encoder.pkl")
+        self.education: OrdinalEncoder = self.load_encoder("education_encoder.pkl")
+        self.home_ownership: OneHotEncoder = self.load_encoder("home_ownership_encoder.pkl")
+        self.loan_intent: OneHotEncoder = self.load_encoder("loan_intent_encoder.pkl")
+        self.previous_loans: LabelEncoder = self.load_encoder("previous_loans_encoder.pkl")
 
     def load_encoder(self, filename):
         with open(filename, "rb") as f:
@@ -26,10 +28,66 @@ class Encoders:
 Encoders.load_encoder
 
 #import the model
-with open("xgb_classifier_model.pkl", "rb") as f:
-    xgb_model = pickle.load(f)
+class XGB_Classifier(XGBClassifier):
+    def __init__(self):
+        self.xgb_model: XGBClassifier = self.load_model("xgb_classifier_model.pkl")
+        self.encoders = Encoders()
+        
+    def load_model(self, filename):
+        """This function is to load the model
 
+        Args:
+            filename (_type_): The filename of the model in .pkl format
 
+        Returns:
+            _type_: Pickle loaded object
+        """
+        with open(filename, "rb") as f:
+            return pickle.load(f)
+        
+    def train(self, data: DataFrame):
+        # Split data to train and test
+        x = data.drop(columns=["loan_status"])
+        y = data["loan_status"]
+        train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.2, random_state=42)
+        
+        # encoding the categorical variables
+        train_gender_encoded = pd.DataFrame(self.encoders.gender.fit_transform(train_x["person_gender"]))
+        train_gender_encoded.columns = ["gender"]
+
+        train_home_ownership_encoded = pd.DataFrame(self.encoders.home_ownership.fit_transform(train_x[["person_home_ownership"]]))
+        train_home_ownership_encoded.columns = self.encoders.home_ownership.get_feature_names_out(["person_home_ownership"])
+
+        train_loan_intent_encoded = self.encoders.loan_intent.fit_transform(train_x[["loan_intent"]])
+        train_loan_intent_encoded.columns = self.encoders.loan_intent.get_feature_names_out(["loan_intent"])
+
+        train_prev_loans_encoded = pd.DataFrame(self.encoders.previous_loans.fit_transform(train_x["previous_loan_defaults_on_file"]))
+        train_prev_loans_encoded.columns = ['previous_loan_default']
+
+        train_education_encoded = pd.DataFrame(self.encoders.education.fit_transform(train_x[["person_education"]]))
+        train_education_encoded.columns = ['education_level']
+        
+        # Flatten the y values
+        train_y = train_y.values.ravel()
+        
+        #retrain the model
+        self.xgb_model.fit(train_x, train_y)
+        
+    def predict(self, data: DataFrame):
+        return self.xgb_model.predict(data)
+
+    def evaluation(data: DataFrame):
+        x = data.drop(columns=["loan_status"])
+        y = data["loan_status"]
+        train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.2, random_state=42)
+        prediction = self.xgb_model.predict(test_x)
+        return classification_report(test_y, prediction)
+    
+    def feature_importance():
+        return self.xgb_model.feature_importances_
+        
+        
+    
 st.title("Loan Eligibility Predictor 🏦💸")
 
 gender = st.selectbox("Gender", ["Male", "Female"])
