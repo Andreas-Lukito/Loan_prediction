@@ -240,7 +240,7 @@ loan_rate = st.number_input("Interest Rate (%)", min_value=0.0, value=float(st.s
 credit_score = st.number_input("Credit Score", min_value=0, value=int(st.session_state.credit_score))
 credit_hist_length = st.number_input("Credit Duration (in one year)", min_value=0, value=int(st.session_state.credit_hist_length))
 person_emp_exp = st.number_input("Work Experience (in years)", min_value=0.0, value=float(st.session_state.person_emp_exp))
-age = st.number_input("Age", min_value=18, value=int(st.session_state.age))
+age = st.number_input("Age", min_value=0, value=int(st.session_state.age))
 
 model = XGB_Classifier()
 
