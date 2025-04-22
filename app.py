@@ -35,8 +35,6 @@ class Encoders:
         with open(filename, "rb") as f:
             return pickle.load(f)
 
-Encoders.load_encoder
-
 #import the model
 class XGB_Classifier(XGBClassifier):
     def __init__(self):
