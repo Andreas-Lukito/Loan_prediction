@@ -175,6 +175,21 @@ presets = {
 # App
 st.title("Loan Eligibility Predictor 🏦💸")
 
+#initialize session state
+if "current_preset" not in st.session_state:
+        st.session_state.gender = "Male"
+        st.session_state.education = "High School"
+        st.session_state.home_ownership = "Rent"
+        st.session_state.loan_intent = "Personal"
+        st.session_state.previous_loans = "No"
+        st.session_state.income = 0
+        st.session_state.loan_amount = 0
+        st.session_state.loan_rate = 0
+        st.session_state.credit_score = 0
+        st.session_state.credit_hist_length = 0
+        st.session_state.person_emp_exp = 0
+        st.session_state.age = 0
+
 with st.sidebar:
     if st.button("Eligible for Loan 🎉"):
             selected_preset = "Eligible for Loan 🎉"
