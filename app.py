@@ -120,8 +120,6 @@ age = st.number_input("Age", min_value=18)
 
 model = XGB_Classifier()
 
-st.write(model.feature_names)
-
 if st.button("Predict"):
     input_data = pd.DataFrame([{
         "person_income": income,
