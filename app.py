@@ -128,6 +128,11 @@ if st.button("Predict"):
         "loan_amnt": loan_amount,
         "loan_int_rate": loan_rate,
         "loan_term": loan_term,
+        "person_gender": gender,  # Add gender input
+        "person_education": education,  # Add education input
+        "person_home_ownership": home_ownership,  # Add home ownership input
+        "loan_intent": loan_intent,  # Add loan intent input
+        "previous_loan_defaults_on_file": previous_loans  # Add previous loan default input
     }])
 
     gender = gender.strip().lower()
