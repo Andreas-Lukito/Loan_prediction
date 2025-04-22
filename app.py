@@ -141,7 +141,7 @@ class XGB_Classifier(XGBClassifier):
 # Input Presets
 presets = {
     "Eligible for Loan 🎉":{
-        "Annual Income ($)": income,
+        "Annual Income ($)": 71948.0,
         "person_age": 22.0,
         "loan_amnt": 35000.0,
         "loan_int_rate": 16.02,
@@ -156,7 +156,7 @@ presets = {
         "credit_score": 561
     },
     "Not Eligible for Loan 🥹":{
-        "Annual Income ($)": income,
+        "Annual Income ($)": 12282.0,
         "person_age": 21.0,
         "loan_amnt": 1000.0,
         "loan_int_rate": 11.14,
