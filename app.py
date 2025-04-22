@@ -141,7 +141,7 @@ class XGB_Classifier(XGBClassifier):
 # Input Presets
 presets = {
     "Eligible for Loan 🎉":{
-        "Annual Income ($)": 71948.0,
+        "Annual_Income": 71948.0,
         "person_age": 22.0,
         "loan_amnt": 35000.0,
         "loan_int_rate": 16.02,
@@ -156,7 +156,7 @@ presets = {
         "credit_score": 561
     },
     "Not Eligible for Loan 🥹":{
-        "Annual Income ($)": 12282.0,
+        "Annual_Income": 12282.0,
         "person_age": 21.0,
         "loan_amnt": 1000.0,
         "loan_int_rate": 11.14,
@@ -201,17 +201,17 @@ with st.sidebar:
     if selected_preset != "None":    
         preset = presets[selected_preset]
         st.session_state.gender = preset["person_gender"]
-        st.session_state.education = preset["education"]
-        st.session_state.home_ownership = preset["home_ownership"]
+        st.session_state.education = preset["person_education"]
+        st.session_state.home_ownership = preset["person_home_ownership"]
         st.session_state.loan_intent = preset["loan_intent"]
-        st.session_state.previous_loans = preset["previous_loans"]
-        st.session_state.income = preset["income"]
-        st.session_state.loan_amount = preset["loan_amount"]
-        st.session_state.loan_rate = preset["loan_rate"]
+        st.session_state.previous_loans = preset["previous_loan_default"]
+        st.session_state.income = preset["Annual_Income"]
+        st.session_state.loan_amount = preset["loan_amnt"]
+        st.session_state.loan_rate = preset["loan_int_rate"]
         st.session_state.credit_score = preset["credit_score"]
         st.session_state.credit_hist_length = preset["cb_person_cred_hist_length"]
         st.session_state.person_emp_exp = preset["person_emp_exp"]
-        st.session_state.age = preset["age"]
+        st.session_state.age = preset["person_age"]
     else:
         gender = st.selectbox("Gender", ["Male", "Female"])
         education = st.selectbox("Education", ["High School", "Associate", "Bachelor", "Master", "Doctorate"])
