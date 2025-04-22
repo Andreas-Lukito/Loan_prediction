@@ -17,3 +17,4 @@ tqdm==4.67.1
 typeguard==4.4.2
 tzdata==2025.2
 xgboost==3.0.0
+mkl-service==2.4.0
