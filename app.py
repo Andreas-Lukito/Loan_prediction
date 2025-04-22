@@ -194,12 +194,7 @@ with st.sidebar:
     selected_preset = "None"
     
     if st.button("Eligible for Loan 🎉"):
-            selected_preset = "Eligible for Loan 🎉"
-    if st.button("Not Eligible for Loan 🥹"):
-            selected_preset = "Not Eligible for Loan 🥹"
-
-if selected_preset != "None":    
-        preset = presets[selected_preset]
+        preset = presets["Eligible for Loan 🎉"]
         st.session_state.gender = preset["person_gender"]
         st.session_state.education = preset["person_education"]
         st.session_state.home_ownership = preset["person_home_ownership"]
@@ -212,7 +207,21 @@ if selected_preset != "None":
         st.session_state.credit_hist_length = preset["cb_person_cred_hist_length"]
         st.session_state.person_emp_exp = preset["person_emp_exp"]
         st.session_state.age = preset["person_age"]
-else:
+    if st.button("Not Eligible for Loan 🥹"):
+        preset = presets["Not Eligible for Loan 🥹"]
+        st.session_state.gender = preset["person_gender"]
+        st.session_state.education = preset["person_education"]
+        st.session_state.home_ownership = preset["person_home_ownership"]
+        st.session_state.loan_intent = preset["loan_intent"]
+        st.session_state.previous_loans = preset["previous_loan_default"]
+        st.session_state.income = preset["Annual_Income"]
+        st.session_state.loan_amount = preset["loan_amnt"]
+        st.session_state.loan_rate = preset["loan_int_rate"]
+        st.session_state.credit_score = preset["credit_score"]
+        st.session_state.credit_hist_length = preset["cb_person_cred_hist_length"]
+        st.session_state.person_emp_exp = preset["person_emp_exp"]
+        st.session_state.age = preset["person_age"]
+
     gender = st.selectbox("Gender", ["Male", "Female"], index=["Male", "Female"].index(st.session_state.gender))
     education = st.selectbox("Education", ["High School", "Associate", "Bachelor", "Master", "Doctorate"],
                             index=["High School", "Associate", "Bachelor", "Master", "Doctorate"].index(st.session_state.education))
