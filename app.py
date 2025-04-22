@@ -129,6 +129,15 @@ if st.button("Predict"):
         "loan_term": loan_term,
     }])
 
+    gender = gender.strip().lower()
+    education = education.strip()
+    home_ownership = home_ownership.strip()
+    loan_intent = loan_intent.strip()
+    previous_loans = previous_loans.strip().capitalize()  # If your encoder expects "Yes"/"No"
+
+
+    st.write(model.encoders.home_ownership.get_feature_names_out())
+    st.write(model.encoders.loan_intent.get_feature_names_out())
     # Apply encoders
     input_data["person_gender"] = model.encoders.gender.transform([gender])[0]
     input_data["person_education"] = model.encoders.education.transform([[education]])
