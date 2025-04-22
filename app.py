@@ -167,6 +167,7 @@ if st.button("Predict"):
     # Concatenate the transformed one-hot encoded columns
     input_data = pd.concat([input_data.reset_index(drop=True), home_df, loan_df], axis=1)
 
+    st.write("Expected columns:", input_data.columns.to_list())
     st.write("Expected columns:", expected_columns)
 
     # Ensure the column order matches the model's expected columns
