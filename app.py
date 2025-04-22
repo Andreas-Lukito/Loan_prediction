@@ -132,7 +132,7 @@ if st.button("Predict"):
         "person_education": education,  # Add education input
         "person_home_ownership": home_ownership,  # Add home ownership input
         "loan_intent": loan_intent,  # Add loan intent input
-        "previous_loan_defaults_on_file": previous_loans  # Add previous loan default input
+        "previous_loan_default": previous_loans  # Add previous loan default input
     }])
 
     gender = gender.strip().lower()
@@ -146,9 +146,6 @@ if st.button("Predict"):
     input_data["cb_person_cred_hist_length"] = 0  # Example: set to 0
     input_data["credit_score"] = 0  # Example: set to 0
     input_data["loan_percent_income"] = loan_amount / income if income > 0 else 0  # Calculate loan_percent_income
-
-    # Fix column name mismatch
-    input_data["previous_loan_default"] = input_data.drop(columns = "previous_loan_defaults_on_file")
 
     # Ensure all features are in the same order as the model expects
     expected_columns = [
