@@ -152,7 +152,6 @@ loan_term = st.number_input("Loan Term (in months)", min_value=0)
 age = st.number_input("Age", min_value=18)
 
 model = XGB_Classifier()
-st.write(model.xgb_model.feature_names_in_.tolist())
 
 if st.button("Predict"):
     input_data = pd.DataFrame([{
