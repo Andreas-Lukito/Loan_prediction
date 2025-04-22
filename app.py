@@ -137,21 +137,72 @@ class XGB_Classifier(XGBClassifier):
         plt.title("Feature Importances XGB Classifier Model")
         plt.tight_layout()  # Helps prevent label cutoff
         return plt #return the plot
-        
+
+# Input Presets
+presets = {
+    "Eligible for Loan 🎉":{
+        "Annual Income ($)": income,
+        "person_age": 22.0,
+        "loan_amnt": 35000.0,
+        "loan_int_rate": 16.02,
+        "person_gender": "Female",
+        "person_education": "Master",
+        "person_home_ownership": "Rent",
+        "loan_intent": "Personal",
+        "previous_loan_default": "No",
+        "loan_percent_income": 35000.0 / 71948.0 if 71948.0 else 0,
+        "person_emp_exp": 0,
+        "cb_person_cred_hist_length": 3,
+        "credit_score": 561
+    },
+    "Not Eligible for Loan 🥹":{
+        "Annual Income ($)": income,
+        "person_age": 21.0,
+        "loan_amnt": 1000.0,
+        "loan_int_rate": 11.14,
+        "person_gender": "Female",
+        "person_education": "High School",
+        "person_home_ownership": "Own",
+        "loan_intent": "Personal",
+        "previous_loan_default": "Yes",
+        "loan_percent_income": 1000.0 / 12282.0 if 12282.0 else 0,
+        "person_emp_exp": 0,
+        "cb_person_cred_hist_length": 2,
+        "credit_score": 504
+    }
+}
+     
 # App
 st.title("Loan Eligibility Predictor 🏦💸")
 
-gender = st.selectbox("Gender", ["male", "female"])
-education = st.selectbox("Education", ["High School", "Associate", "Bachelor", "Master", "Doctorate"])
-home_ownership = st.selectbox("Home Ownership", ["Rent", "Own", "Mortgage", "Other"])
-loan_intent = st.selectbox("Loan Intent", ["Education", "Medical", "Venture", "Personal", "Home Improvement", "Debt Consolidation"])
-previous_loans = st.selectbox("Previous Loan Default", ["Yes", "No"])
-
-income = st.number_input("Annual Income", min_value=0)
-loan_amount = st.number_input("Loan Amount", min_value=0)
-loan_rate = st.number_input("Interest Rate (%)", min_value=0.0, format="%.2f")
-loan_term = st.number_input("Loan Term (in months)", min_value=0)
-age = st.number_input("Age", min_value=18)
+with st.sidebar:
+    if selected_preset != "None":
+        st.session_state.preset = presets[selected_preset]
+        st.session_state.gender = preset["gender"]
+        st.session_state.education = preset["education"]
+        st.session_state.home_ownership = preset["home_ownership"]
+        st.session_state.loan_intent = preset["loan_intent"]
+        st.session_state.previous_loans = preset["previous_loans"]
+        st.session_state.income = preset["income"]
+        st.session_state.loan_amount = preset["loan_amount"]
+        st.session_state.loan_rate = preset["loan_rate"]
+        st.session_state.credit_score = preset["credit_score"]
+        st.session_state.credit_hist_length = preset["cb_person_cred_hist_length"]
+        st.session_state.person_emp_exp = preset["person_emp_exp"]
+        st.session_state.age = preset["age"]
+    else:
+        gender = st.selectbox("Gender", ["Male", "Female"])
+        education = st.selectbox("Education", ["High School", "Associate", "Bachelor", "Master", "Doctorate"])
+        home_ownership = st.selectbox("Home Ownership", ["Rent", "Own", "Mortgage", "Other"])
+        loan_intent = st.selectbox("Loan Intent", ["Education", "Medical", "Venture", "Personal", "Home Improvement", "Debt Consolidation"])
+        previous_loans = st.selectbox("Previous Loan Default", ["Yes", "No"])
+        income = st.number_input("Annual Income ($)", min_value=0)
+        loan_amount = st.number_input("Loan Amount ($)", min_value=0)
+        loan_rate = st.number_input("Interest Rate (%)", min_value=0.0, format="%.2f")
+        credit_score = st.number_input("Credit Score", min_value=0)
+        credit_hist_length = st.number_input("Credit Duration (in one year)", min_value=0)
+        person_emp_exp = st.number_input("Work Experience (in years)", min_value=0)
+        age = st.number_input("Age", min_value=18)
 
 model = XGB_Classifier()
 
@@ -161,16 +212,15 @@ if st.button("Predict"):
         "person_age": age,
         "loan_amnt": loan_amount,
         "loan_int_rate": loan_rate,
-        "loan_term": loan_term,
         "person_gender": gender.strip().lower(),
         "person_education": education.strip(),
         "person_home_ownership": home_ownership.strip().upper(),
         "loan_intent": loan_intent.strip().upper(),
         "previous_loan_default": previous_loans.strip().capitalize(),
         "loan_percent_income": loan_amount / income if income else 0,
-        "person_emp_exp": 0,
-        "cb_person_cred_hist_length": 0,
-        "credit_score": 0
+        "person_emp_exp": person_emp_exp,
+        "cb_person_cred_hist_length": credit_hist_length,
+        "credit_score": credit_score
     }])
 
 
@@ -183,4 +233,4 @@ if st.button("Predict"):
     if prediction == 1:
         st.success("Eligible for Loan! 🎉")
     else:
-        st.error("Not Eligible for Loan.")
+        st.error("Not Eligible for Loan. 🥹")
