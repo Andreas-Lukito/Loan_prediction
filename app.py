@@ -234,13 +234,13 @@ previous_loans = st.selectbox("Previous Loan Default", ["Yes", "No"],
                             index=["Yes", "No"].index(st.session_state.previous_loans))
 
 # Ensure all numerical inputs have consistent formatting
-income = st.number_input("Annual Income ($)", min_value=0.0, value=st.session_state.income)
-loan_amount = st.number_input("Loan Amount ($)", min_value=0.0, value=st.session_state.loan_amount)
-loan_rate = st.number_input("Interest Rate (%)", min_value=0.0, value=st.session_state.loan_rate)
-credit_score = st.number_input("Credit Score", min_value=0, value=st.session_state.credit_score)
-credit_hist_length = st.number_input("Credit Duration (in one year)", min_value=0, value=st.session_state.credit_hist_length)
-person_emp_exp = st.number_input("Work Experience (in years)", min_value=0.0, value=st.session_state.person_emp_exp)
-age = st.number_input("Age", min_value=18, value=st.session_state.age)
+income = st.number_input("Annual Income ($)", min_value=0.0, value=float(st.session_state.income))
+loan_amount = st.number_input("Loan Amount ($)", min_value=0.0, value=float(st.session_state.loan_amount))
+loan_rate = st.number_input("Interest Rate (%)", min_value=0.0, value=float(st.session_state.loan_rate))
+credit_score = st.number_input("Credit Score", min_value=0, value=int(st.session_state.credit_score))
+credit_hist_length = st.number_input("Credit Duration (in one year)", min_value=0, value=int(st.session_state.credit_hist_length))
+person_emp_exp = st.number_input("Work Experience (in years)", min_value=0.0, value=float(st.session_state.person_emp_exp))
+age = st.number_input("Age", min_value=18, value=int(st.session_state.age))
 
 model = XGB_Classifier()
 
