@@ -81,37 +81,41 @@ class XGB_Classifier(XGBClassifier):
         #retrain the model
         self.xgb_model.fit(train_x, train_y)
         
-    def predict(self, data: DataFrame):
-        # Ensure 'input_data' has the expected columns and values
-        if isinstance(data, pd.DataFrame):
-            # Add missing columns with default values, ensuring no mismatch in row length
-            data["person_emp_exp"] = 0
-            data["cb_person_cred_hist_length"] = 0
-            data["credit_score"] = 0
-            data["loan_percent_income"] = loan_amount / income if income else 0
-        else:
-            # Handle the case where input_data is not a DataFrame
-            raise ValueError("Input data is not in the expected DataFrame format")
-        
-        home_ownership_encoded = pd.DataFrame(
-            self.encoders.home_ownership.transform(data[["person_home_ownership"]]),
-            columns=self.encoders.home_ownership.get_feature_names_out(["person_home_ownership"])
-        )
+    def predict(self, input_data: DataFrame):
+        # Encode inputs using the loaded encoders
 
-        loan_intent_encoded = pd.DataFrame(
-            self.encoders.loan_intent.transform(data[["loan_intent"]]),
-            columns=self.encoders.loan_intent.get_feature_names_out(["loan_intent"])
-        )
+        gender_encoded = pd.DataFrame(self.encoders.gender.transform(input_data["person_gender"]))
+        gender_encoded.columns = ["gender"]
 
-        data["person_gender"] = self.encoders.gender.transform(data["person_gender"])
-        data["previous_loan_default"] = self.encoders.previous_loans.transform(data["previous_loan_default"])
-        data["person_education"] = self.encoders.education.transform(data[["person_education"]])
+        home_ownership_encoded = pd.DataFrame(self.encoders.home_ownership.transform(input_data[["person_home_ownership"]]))
+        home_ownership_encoded.columns = self.encoders.home_ownership.get_feature_names_out(["person_home_ownership"])
 
-        # merge all data
-        data = data.drop(columns=["person_home_ownership", "loan_intent"])
-        data = pd.concat([data, home_ownership_encoded, loan_intent_encoded], axis=1)
-        
-        return self.xgb_model.predict(data)
+        loan_intent_encoded = pd.DataFrame(self.encoders.loan_intent.transform(input_data[["loan_intent"]]))
+        loan_intent_encoded.columns = self.encoders.loan_intent.get_feature_names_out(["loan_intent"])
+
+        previous_loans_encoded = pd.DataFrame(self.encoders.previous_loans.transform(input_data["previous_loan_default"]))
+        previous_loans_encoded.columns = ["previous_loan_default"]
+
+        education_encoded = pd.DataFrame(self.encoders.education.transform(input_data[["person_education"]]))
+        education_encoded.columns = ["education_level"]
+
+        # Combine all required numeric + encoded features
+        final_input = pd.concat([
+            input_data[[
+                "person_age", "person_income", "person_emp_exp",
+                "loan_amnt", "loan_int_rate", "loan_percent_income",
+                "cb_person_cred_hist_length", "credit_score"
+            ]].reset_index(drop=True),
+            gender_encoded,
+            home_ownership_encoded.reset_index(drop=True),
+            loan_intent_encoded.reset_index(drop=True),
+            previous_loans_encoded.reset_index(drop=True),
+            education_encoded.reset_index(drop=True)
+        ], axis=1)
+
+        # Predict with model
+        return self.xgb_model.predict(final_input)
+
 
     def evaluation(self, data: DataFrame):
         x = data.drop(columns=["loan_status"])
