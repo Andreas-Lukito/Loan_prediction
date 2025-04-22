@@ -227,7 +227,7 @@ gender = st.selectbox("Gender", ["Male", "Female"], index=["Male", "Female"].ind
 education = st.selectbox("Education", ["High School", "Associate", "Bachelor", "Master", "Doctorate"],
                         index=["High School", "Associate", "Bachelor", "Master", "Doctorate"].index(st.session_state.education), key = "education")
 home_ownership = st.selectbox("Home Ownership", ["Rent", "Own", "Mortgage", "Other"],
-                            index=["Rent", "Own", "Mortgage", "Other"].index(st.session_state.home_ownership), kry = "home_ownership")
+                            index=["Rent", "Own", "Mortgage", "Other"].index(st.session_state.home_ownership), key = "home_ownership")
 loan_intent = st.selectbox("Loan Intent", ["Education", "Medical", "Venture", "Personal", "Home Improvement", "Debt Consolidation"],
                         index=["Education", "Medical", "Venture", "Personal", "Home Improvement", "Debt Consolidation"].index(st.session_state.loan_intent), key = "loan_intent")
 previous_loans = st.selectbox("Previous Loan Default", ["Yes", "No"],
