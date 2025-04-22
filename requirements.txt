@@ -10,7 +10,6 @@ pandas==2.2.3
 pyarrow==19.0.1
 pyparsing==3.2.3
 pytz==2025.2
-pywin-308; plaform_system == "Windows"
 typeguard==4.4.2
 tzdata==2025.2
 xgboost==3.0.0
