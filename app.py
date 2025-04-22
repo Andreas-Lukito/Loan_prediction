@@ -233,7 +233,7 @@ with st.sidebar:
                                 index=["Yes", "No"].index(st.session_state.previous_loans))
 
     income = st.number_input("Annual Income ($)", min_value=0, value=st.session_state.income, format="%.2f")
-    loan_amount = st.number_input("Loan Amount ($)", min_value=0, value=st.session_state.loan_amount), format="%.2f"
+    loan_amount = st.number_input("Loan Amount ($)", min_value=0, value=st.session_state.loan_amount, format="%.2f")
     loan_rate = st.number_input("Interest Rate (%)", min_value=0.0, value=st.session_state.loan_rate, format="%.2f")
     credit_score = st.number_input("Credit Score", min_value=0, value=st.session_state.credit_score)
     credit_hist_length = st.number_input("Credit Duration (in one year)", min_value=0, value=st.session_state.credit_hist_length)
