@@ -132,22 +132,48 @@ if st.button("Predict"):
 
     gender = gender.strip().lower()
     education = education.strip()
-    home_ownership = home_ownership.strip().upper() #the ecoder expects all capital letters
+    home_ownership = home_ownership.strip().upper()  # The encoder expects capital letters
     loan_intent = loan_intent.strip().upper()
     previous_loans = previous_loans.strip().capitalize()  # If your encoder expects "Yes"/"No"
 
-    # Apply encoders
+    # Add missing features with default values (or compute based on available data)
+    input_data["person_emp_exp"] = 0  # Example: set to 0
+    input_data["cb_person_cred_hist_length"] = 0  # Example: set to 0
+    input_data["credit_score"] = 0  # Example: set to 0
+    input_data["loan_percent_income"] = loan_amount / income if income > 0 else 0  # Calculate loan_percent_income
+
+    # Fix column name mismatch
+    input_data["previous_loan_default"] = input_data.pop("previous_loan_defaults_on_file")
+
+    # Ensure all features are in the same order as the model expects
+    expected_columns = [
+        "person_income", "person_age", "person_emp_exp", "loan_amnt", "loan_int_rate", "loan_percent_income", 
+        "cb_person_cred_hist_length", "credit_score", "gender", "person_home_ownership_MORTGAGE", 
+        "person_home_ownership_OTHER", "person_home_ownership_OWN", "person_home_ownership_RENT", 
+        "loan_intent_DEBTCONSOLIDATION", "loan_intent_EDUCATION", "loan_intent_HOMEIMPROVEMENT", 
+        "loan_intent_MEDICAL", "loan_intent_PERSONAL", "loan_intent_VENTURE", "previous_loan_default", "education_level"
+    ]
+
+    # Apply one-hot encoders and other transformations here as needed
     input_data["person_gender"] = model.encoders.gender.transform([gender])[0]
     input_data["person_education"] = model.encoders.education.transform([[education]])
+
+    # One-hot encode home ownership and loan intent
     home_df = pd.DataFrame(model.encoders.home_ownership.transform([[home_ownership]]), columns=model.encoders.home_ownership.get_feature_names_out())
     loan_df = pd.DataFrame(model.encoders.loan_intent.transform([[loan_intent]]), columns=model.encoders.loan_intent.get_feature_names_out())
-    input_data["previous_loan_defaults_on_file"] = model.encoders.previous_loans.transform([previous_loans])[0]
 
+    # Concatenate the transformed one-hot encoded columns
     input_data = pd.concat([input_data.reset_index(drop=True), home_df, loan_df], axis=1)
 
+    # Ensure the column order matches the model's expected columns
+    input_data = input_data[expected_columns]
+
+    # Show input data for debugging
     st.write(input_data.columns.tolist())
 
+    # Make the prediction
     prediction = model.predict(input_data)[0]
+
     if prediction == 1:
         st.success("Eligible for Loan!")
     else:
