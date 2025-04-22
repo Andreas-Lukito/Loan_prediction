@@ -82,11 +82,34 @@ class XGB_Classifier(XGBClassifier):
         self.xgb_model.fit(train_x, train_y)
         
     def predict(self, data: DataFrame):
-        # Encode categorical variables in the input data
+        # Ensure 'input_data' has the expected columns and values
+        if isinstance(data, pd.DataFrame):
+            # Add missing columns with default values, ensuring no mismatch in row length
+            data["person_emp_exp"] = 0
+            data["cb_person_cred_hist_length"] = 0
+            data["credit_score"] = 0
+            data["loan_percent_income"] = loan_amount / income if income else 0
+        else:
+            # Handle the case where input_data is not a DataFrame
+            raise ValueError("Input data is not in the expected DataFrame format")
+        
+        home_ownership_encoded = pd.DataFrame(
+            self.encoders.home_ownership.transform(data[["person_home_ownership"]]),
+            columns=self.encoders.home_ownership.get_feature_names_out(["person_home_ownership"])
+        )
+
+        loan_intent_encoded = pd.DataFrame(
+            self.encoders.loan_intent.transform(data[["loan_intent"]]),
+            columns=self.encoders.loan_intent.get_feature_names_out(["loan_intent"])
+        )
+
         data["person_gender"] = self.encoders.gender.transform(data["person_gender"])
-        data["person_home_ownership"] = self.encoders.home_ownership.transform(data[["person_home_ownership"]])
-        data["loan_intent"] = self.encoders.loan_intent.transform(data[["loan_intent"]])
         data["previous_loan_default"] = self.encoders.previous_loans.transform(data["previous_loan_default"])
+        data["person_education"] = self.encoders.education.transform(data[["person_education"]])
+
+        # merge all data
+        data = data.drop(columns=["person_home_ownership", "loan_intent"])
+        data = pd.concat([data, home_ownership_encoded, loan_intent_encoded], axis=1)
         
         return self.xgb_model.predict(data)
 
@@ -134,12 +157,17 @@ if st.button("Predict"):
         "loan_amnt": loan_amount,
         "loan_int_rate": loan_rate,
         "loan_term": loan_term,
-        "person_gender": gender.strip().lower(),  # Ensure gender is in lowercase
+        "person_gender": gender.strip().lower(),
         "person_education": education.strip(),
-        "person_home_ownership": home_ownership.strip().upper(),  # The encoder expects capital letters
-        "loan_intent": loan_intent.strip().upper(),  # Ensure loan intent is in uppercase
-        "previous_loan_default": previous_loans.strip().capitalize()  # Ensure previous loan default is capitalized
+        "person_home_ownership": home_ownership.strip().upper(),
+        "loan_intent": loan_intent.strip().upper(),
+        "previous_loan_default": previous_loans.strip().capitalize(),
+        "loan_percent_income": loan_amount / income if income else 0,
+        "person_emp_exp": 0,
+        "cb_person_cred_hist_length": 0,
+        "credit_score": 0
     }])
+
 
     # Make the prediction
     prediction = model.predict(input_data)
