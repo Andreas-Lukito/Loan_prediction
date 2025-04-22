@@ -106,7 +106,7 @@ class XGB_Classifier(XGBClassifier):
 # App
 st.title("Loan Eligibility Predictor 🏦💸")
 
-gender = st.selectbox("Gender", ["Male", "Female"])
+gender = st.selectbox("Gender", ["male", "female"])
 education = st.selectbox("Education", ["High School", "Associate", "Bachelor", "Master", "Doctorate"])
 home_ownership = st.selectbox("Home Ownership", ["Rent", "Own", "Mortgage", "Other"])
 loan_intent = st.selectbox("Loan Intent", ["Education", "Medical", "Venture", "Personal", "Home Improvement", "Debt Consolidation"])
