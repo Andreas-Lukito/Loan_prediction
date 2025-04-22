@@ -24,6 +24,14 @@ class Encoders:
         self.previous_loans: LabelEncoder = self.load_encoder("previous_loans_encoder.pkl")
 
     def load_encoder(self, filename):
+        """This function loads the encoders for the model
+
+        Args:
+            filename (_type_): the filename of the encider
+
+        Returns:
+            _type_: returns a loaded pickle object
+        """
         with open(filename, "rb") as f:
             return pickle.load(f)
 
