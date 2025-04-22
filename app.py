@@ -245,6 +245,20 @@ age = st.number_input("Age", min_value=0, value=int(st.session_state.age))
 model = XGB_Classifier()
 
 if st.button("Predict"):
+    # Update session state with the latest input values
+    st.session_state.gender = gender
+    st.session_state.education = education
+    st.session_state.home_ownership = home_ownership
+    st.session_state.loan_intent = loan_intent
+    st.session_state.previous_loans = previous_loans
+    st.session_state.income = income
+    st.session_state.loan_amount = loan_amount
+    st.session_state.loan_rate = loan_rate
+    st.session_state.credit_score = credit_score
+    st.session_state.credit_hist_length = credit_hist_length
+    st.session_state.person_emp_exp = person_emp_exp
+    st.session_state.age = age
+    
     input_data = pd.DataFrame([{
         "person_income": income,
         "person_age": age,
