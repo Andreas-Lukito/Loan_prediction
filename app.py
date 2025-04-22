@@ -82,6 +82,12 @@ class XGB_Classifier(XGBClassifier):
         self.xgb_model.fit(train_x, train_y)
         
     def predict(self, data: DataFrame):
+        # Encode categorical variables in the input data
+        data["person_gender"] = self.encoders.gender.transform(data["person_gender"])
+        data["person_home_ownership"] = self.encoders.home_ownership.transform(data[["person_home_ownership"]])
+        data["loan_intent"] = self.encoders.loan_intent.transform(data[["loan_intent"]])
+        data["previous_loan_default"] = self.encoders.previous_loans.transform(data["previous_loan_default"])
+        
         return self.xgb_model.predict(data)
 
     def evaluation(self, data: DataFrame):
@@ -128,62 +134,15 @@ if st.button("Predict"):
         "loan_amnt": loan_amount,
         "loan_int_rate": loan_rate,
         "loan_term": loan_term,
-        "person_gender": gender,  # Add gender input
-        "person_education": education,  # Add education input
-        "person_home_ownership": home_ownership,  # Add home ownership input
-        "loan_intent": loan_intent,  # Add loan intent input
-        "previous_loan_default": previous_loans  # Add previous loan default input
+        "person_gender": gender.strip().lower(),  # Ensure gender is in lowercase
+        "person_education": education.strip(),
+        "person_home_ownership": home_ownership.strip().upper(),  # The encoder expects capital letters
+        "loan_intent": loan_intent.strip().upper(),  # Ensure loan intent is in uppercase
+        "previous_loan_default": previous_loans.strip().capitalize()  # Ensure previous loan default is capitalized
     }])
 
-    gender = gender.strip().lower()
-    education = education.strip()
-    home_ownership = home_ownership.strip().upper()  # The encoder expects capital letters
-    loan_intent = loan_intent.strip().upper()
-    previous_loans = previous_loans.strip().capitalize()  # If your encoder expects "Yes"/"No"
-
-    # Add missing features with default values (or compute based on available data)
-    input_data["person_emp_exp"] = 0  # Example: set to 0
-    input_data["cb_person_cred_hist_length"] = 0  # Example: set to 0
-    input_data["credit_score"] = 0  # Example: set to 0
-    input_data["loan_percent_income"] = loan_amount / income if income > 0 else 0  # Calculate loan_percent_income
-
-    # Ensure all features are in the same order as the model expects
-    expected_columns = [
-        "person_income", "person_age", "person_emp_exp", "loan_amnt", "loan_int_rate", "loan_percent_income", 
-        "cb_person_cred_hist_length", "credit_score", "gender", "person_home_ownership_MORTGAGE", 
-        "person_home_ownership_OTHER", "person_home_ownership_OWN", "person_home_ownership_RENT", 
-        "loan_intent_DEBTCONSOLIDATION", "loan_intent_EDUCATION", "loan_intent_HOMEIMPROVEMENT", 
-        "loan_intent_MEDICAL", "loan_intent_PERSONAL", "loan_intent_VENTURE", "previous_loan_default", "education_level"
-    ]
-
-    # Apply one-hot encoders and other transformations here as needed
-    input_data["person_gender"] = model.encoders.gender.transform([gender])[0]
-    input_data["person_education"] = model.encoders.education.transform([[education]])
-
-    # One-hot encode home ownership and loan intent
-    home_df = pd.DataFrame(model.encoders.home_ownership.transform([[home_ownership]]), columns=model.encoders.home_ownership.get_feature_names_out())
-    loan_df = pd.DataFrame(model.encoders.loan_intent.transform([[loan_intent]]), columns=model.encoders.loan_intent.get_feature_names_out())
-
-    # rename columns to expected column names for model
-    input_data.rename(columns={
-    'person_gender': 'gender',
-    'person_education': 'education_level'
-    }, inplace=True)
-    
-    # Concatenate the transformed one-hot encoded columns
-    input_data = pd.concat([input_data.reset_index(drop=True), home_df, loan_df], axis=1)
-
-    st.write("Expected columns:", input_data.columns.to_list())
-    st.write("Expected columns:", expected_columns)
-
-    # Ensure the column order matches the model's expected columns
-    input_data = input_data[expected_columns]
-
-    # Show input data for debugging
-    st.write(input_data.columns.tolist())
-
     # Make the prediction
-    prediction = model.predict(input_data)[0]
+    prediction = model.predict(input_data)
 
     if prediction == 1:
         st.success("Eligible for Loan!")
