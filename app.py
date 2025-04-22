@@ -191,6 +191,8 @@ if "current_preset" not in st.session_state:
         st.session_state.age = 0
 
 with st.sidebar:
+    selected_preset = "None"
+    
     if st.button("Eligible for Loan 🎉"):
             selected_preset = "Eligible for Loan 🎉"
     if st.button("Not Eligible for Loan 🥹"):
@@ -198,7 +200,7 @@ with st.sidebar:
     
     if selected_preset != "None":    
         preset = presets[selected_preset]
-        st.session_state.gender = preset["gender"]
+        st.session_state.gender = preset["person_gender"]
         st.session_state.education = preset["education"]
         st.session_state.home_ownership = preset["home_ownership"]
         st.session_state.loan_intent = preset["loan_intent"]
