@@ -145,7 +145,7 @@ if st.button("Predict"):
 
     input_data = pd.concat([input_data.reset_index(drop=True), home_df, loan_df], axis=1)
 
-    st.write(model.input_data.columns)
+    st.write(input_data.columns)
 
     prediction = model.predict(input_data)[0]
     if prediction == 1:
