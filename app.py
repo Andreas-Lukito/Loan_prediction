@@ -118,6 +118,9 @@ loan_rate = st.number_input("Interest Rate (%)", min_value=0.0, format="%.2f")
 loan_term = st.number_input("Loan Term (in months)", min_value=0)
 age = st.number_input("Age", min_value=18)
 
+model = XGB_Classifier()
+st.write("Gender Encoder Classes:", model.encoders.gender.classes_)
+
 if st.button("Predict"):
     input_data = pd.DataFrame([{
         "person_income": income,
@@ -128,7 +131,6 @@ if st.button("Predict"):
     }])
 
     # Apply encoders
-    model = XGB_Classifier()
     input_data["person_gender"] = model.encoders.gender.transform([gender])[0]
     input_data["person_education"] = model.encoders.education.transform([[education]])[0]
     home_df = pd.DataFrame(model.encoders.home_ownership.transform([[home_ownership]]), columns=model.encoders.home_ownership.get_feature_names_out())
