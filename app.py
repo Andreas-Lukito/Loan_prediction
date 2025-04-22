@@ -4,6 +4,8 @@ import streamlit as st
 import pandas as pd
 import os
 import pickle
+from pandas import DataFrame
+import matplotlib.pyplot as plt
 
 # ML Libraries
 from sklearn.preprocessing import LabelEncoder, OrdinalEncoder, OneHotEncoder
@@ -76,18 +78,26 @@ class XGB_Classifier(XGBClassifier):
     def predict(self, data: DataFrame):
         return self.xgb_model.predict(data)
 
-    def evaluation(data: DataFrame):
+    def evaluation(self, data: DataFrame):
         x = data.drop(columns=["loan_status"])
         y = data["loan_status"]
         train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.2, random_state=42)
         prediction = self.xgb_model.predict(test_x)
         return classification_report(test_y, prediction)
     
-    def feature_importance():
-        return self.xgb_model.feature_importances_
+    def feature_importance(self, data: DataFrame):
+        # Split data to train and test
+        x = data.drop(columns=["loan_status"])
+        y = data["loan_status"]
+        train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.2, random_state=42)
         
+        plt.bar(range(len(self.xgb_classifier_model.feature_importances_)), self.xgb_classifier_model.feature_importances_)
+        plt.xticks(ticks=range(len(train_x.columns)), labels=train_x.columns, rotation=90)
+        plt.title("Feature Importances XGB Classifier Model")
+        plt.tight_layout()  # Helps prevent label cutoff
+        return plt #return the plot
         
-    
+# App
 st.title("Loan Eligibility Predictor 🏦💸")
 
 gender = st.selectbox("Gender", ["Male", "Female"])
@@ -112,11 +122,12 @@ if st.button("Predict"):
     }])
 
     # Apply encoders
-    input_data["person_gender"] = encoders.gender.transform([gender])
-    input_data["person_education"] = encoders.education.transform([[education]])
-    home_df = pd.DataFrame(encoders.home_ownership.transform([[home_ownership]]), columns=encoders.home_ownership.get_feature_names_out())
-    loan_df = pd.DataFrame(encoders.loan_intent.transform([[loan_intent]]), columns=encoders.loan_intent.get_feature_names_out())
-    input_data["previous_loan_defaults_on_file"] = encoders.previous_loans.transform([previous_loans])
+    model = XGB_Classifier()
+    input_data["person_gender"] = model.encoders.gender.transform([gender])[0]
+    input_data["person_education"] = model.encoders.education.transform([[education]])[0]
+    home_df = pd.DataFrame(model.encoders.home_ownership.transform([[home_ownership]]), columns=model.encoders.home_ownership.get_feature_names_out())
+    loan_df = pd.DataFrame(model.encoders.loan_intent.transform([[loan_intent]]), columns=model.encoders.loan_intent.get_feature_names_out())
+    input_data["previous_loan_defaults_on_file"] = model.encoders.previous_loans.transform([previous_loans])[0]
 
     input_data = pd.concat([input_data.reset_index(drop=True), home_df, loan_df], axis=1)
 
