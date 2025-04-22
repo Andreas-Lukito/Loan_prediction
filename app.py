@@ -131,7 +131,7 @@ if st.button("Predict"):
 
     # Apply encoders
     input_data["person_gender"] = model.encoders.gender.transform([gender])[0]
-    input_data["person_education"] = model.encoders.education.transform([education])[0][0]
+    input_data["person_education"] = model.encoders.education.transform([[education]])[0]
     home_df = pd.DataFrame(model.encoders.home_ownership.transform([home_ownership]), columns=model.encoders.home_ownership.get_feature_names_out())
     loan_df = pd.DataFrame(model.encoders.loan_intent.transform([loan_intent]), columns=model.encoders.loan_intent.get_feature_names_out())
     input_data["previous_loan_defaults_on_file"] = model.encoders.previous_loans.transform([previous_loans])[0]
