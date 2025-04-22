@@ -135,13 +135,14 @@ if st.button("Predict"):
     loan_intent = loan_intent.strip().upper()
     previous_loans = previous_loans.strip().capitalize()  # If your encoder expects "Yes"/"No"
 
+    st.write(model.feature_names)
+)
     # Apply encoders
     input_data["person_gender"] = model.encoders.gender.transform([gender])[0]
     input_data["person_education"] = model.encoders.education.transform([[education]])
     home_df = pd.DataFrame(model.encoders.home_ownership.transform([[home_ownership]]), columns=model.encoders.home_ownership.get_feature_names_out())
     loan_df = pd.DataFrame(model.encoders.loan_intent.transform([[loan_intent]]), columns=model.encoders.loan_intent.get_feature_names_out())
     input_data["previous_loan_defaults_on_file"] = model.encoders.previous_loans.transform([previous_loans])[0]
-    st.write(input_data)
 
     input_data = pd.concat([input_data.reset_index(drop=True), home_df, loan_df], axis=1)
 
