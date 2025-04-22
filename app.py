@@ -6,6 +6,7 @@ import os
 import pickle
 from pandas import DataFrame
 import matplotlib.pyplot as plt
+import random
 
 # ML Libraries
 from sklearn.preprocessing import LabelEncoder, OrdinalEncoder, OneHotEncoder
@@ -173,9 +174,12 @@ if st.button("Predict"):
 
 
     # Make the prediction
+    with st.spinner("🧠 Predicting...", show_time=True):
+        time.sleep(random.uniform(0.5, 2.0))
+    
     prediction = model.predict(input_data)
 
     if prediction == 1:
-        st.success("Eligible for Loan!")
+        st.success("Eligible for Loan! 🎉")
     else:
         st.error("Not Eligible for Loan.")
