@@ -176,8 +176,14 @@ presets = {
 st.title("Loan Eligibility Predictor 🏦💸")
 
 with st.sidebar:
+    
     if selected_preset != "None":
-        st.session_state.preset = presets[selected_preset]
+        if st.button("Eligible for Loan 🎉"):
+            selected_preset = "Eligible for Loan 🎉"
+        else:
+            selected_preset = "Not Eligible for Loan 🥹"
+            
+        preset = presets[selected_preset]
         st.session_state.gender = preset["gender"]
         st.session_state.education = preset["education"]
         st.session_state.home_ownership = preset["home_ownership"]
