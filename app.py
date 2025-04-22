@@ -143,7 +143,7 @@ if st.button("Predict"):
     input_data["loan_percent_income"] = loan_amount / income if income > 0 else 0  # Calculate loan_percent_income
 
     # Fix column name mismatch
-    input_data["previous_loan_default"] = input_data.pop("previous_loan_defaults_on_file")
+    input_data["previous_loan_default"] = input_data.drop(columns = "previous_loan_defaults_on_file")
 
     # Ensure all features are in the same order as the model expects
     expected_columns = [
