@@ -164,6 +164,12 @@ if st.button("Predict"):
     home_df = pd.DataFrame(model.encoders.home_ownership.transform([[home_ownership]]), columns=model.encoders.home_ownership.get_feature_names_out())
     loan_df = pd.DataFrame(model.encoders.loan_intent.transform([[loan_intent]]), columns=model.encoders.loan_intent.get_feature_names_out())
 
+    # rename columns to expected column names for model
+    input_data.rename(columns={
+    'person_gender': 'gender',
+    'person_education': 'education_level'
+    }, inplace=True)
+    
     # Concatenate the transformed one-hot encoded columns
     input_data = pd.concat([input_data.reset_index(drop=True), home_df, loan_df], axis=1)
 
